@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import "package:provider/provider.dart";
 import 'package:sanalira_test/pages/login.dart';
 import 'package:sanalira_test/pages/top_up.dart';
+import 'package:sanalira_test/utility/colors.dart';
 import 'package:sanalira_test/utility/firebase/firebase_auth.dart';
 
 void main() async {
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.white,
+        primarySwatch: Colors.green,
       ),
       home: ChangeNotifierProvider(
         create: (context) => FirebaseLoginProvider(),
