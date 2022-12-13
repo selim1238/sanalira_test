@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: Colors.white,
-        primarySwatch: Colors.green,
-      ),
+          primaryColor: Colors.white,
+          primarySwatch: Colors.green,
+          unselectedWidgetColor: Colors.white),
       home: ChangeNotifierProvider(
         create: (context) => FirebaseLoginProvider(),
         child: StreamBuilder(

@@ -1,7 +1,13 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:sanalira_test/utility/colors.dart';
+
+import '../utility/country_data.dart';
+import '../utility/firebase/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,20 +21,18 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   final _emailController = TextEditingController();
   final _phoneNumberController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
+  final _countryCodeController = TextEditingController();
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseLoginProvider _auth = FirebaseLoginProvider();
+  bool formErrorCheck = false;
   RegExp numReg = RegExp(r".*[0-9].*");
   RegExp letterReg = RegExp(r".*[A-Za-z].*");
 
   bool _contractCheck = false;
-
-  void changeContractStatus(bool) {
-    setState(() {
-      _contractCheck = bool;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   //LoginForm
                   Flexible(
-                      flex: 7,
+                      flex: 10,
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
@@ -115,22 +119,59 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Column LoginForm(bool _contractCheck) {
-    final passwordField = TextFormField(
-        obscureText: _obscureText,
-        style: TextStyle(color: Colors.white.withOpacity(0.8)),
-        controller: _passwordController,
-        autofocus: false,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return 'Lütfen bir şifre belirleyin';
-          }
-          if (value.trim().length < 6) {
-            return 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
-          }
-          if (value.contains("?=.*[a-z]")) return null;
-        },
-        decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(12),
+    final passwordField = Form(
+      key: _passwordFormKey,
+      child: TextFormField(
+          obscureText: _obscureText,
+          style: TextStyle(color: Colors.white),
+          controller: _passwordController,
+          autofocus: false,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Lütfen bir şifre belirleyin';
+            }
+            if (value.trim().length < 6) {
+              return 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
+            }
+            if (value.contains("?=.*[a-z]")) return null;
+          },
+          decoration: InputDecoration(
+              contentPadding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              hintText: "Lütfen şifre belirleyin",
+              suffixIcon: IconButton(
+                icon: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              ),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(32.0)))),
+    );
+    final emailField = Form(
+      key: _formKey,
+      child: TextFormField(
+          controller: _emailController,
+          autofocus: false,
+          validator: (value) {
+            if (value != null) {
+              if (value.contains('@') && value.endsWith('.com')) {
+                return null;
+              }
+              return 'Lütfen doğru bir e-posta adresi kullanın.';
+            }
+          },
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(15),
             enabledBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: Colors.white,
@@ -138,40 +179,9 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(10.0),
             ),
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-            hintText: "Lütfen şifre belirleyin",
-            suffixIcon: IconButton(
-              icon:
-                  Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            ),
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))));
-    final emailField = TextFormField(
-        controller: _emailController,
-        autofocus: false,
-        validator: (value) {
-          if (value != null) {
-            if (value.contains('@') && value.endsWith('.com')) {
-              return null;
-            }
-            return 'Lütfen doğru bir e-posta adresi kullanın.';
-          }
-        },
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(12),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.white,
-            ),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          hintText: "esrefyasa@monegon.com",
-        ));
+            hintText: "esrefyasa@monegon.com",
+          )),
+    );
 
     final nameField = TextFormField(
         controller: _nameController,
@@ -185,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         },
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: const EdgeInsets.all(15),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: Colors.white,
@@ -208,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         },
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: const EdgeInsets.all(15),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: Colors.white,
@@ -234,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           counterText: "", //Disabling the counter under the form ( 0/10 )
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: const EdgeInsets.all(15),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: Colors.white,
@@ -245,10 +255,39 @@ class _LoginPageState extends State<LoginPage> {
           hintText: "(535) 123 45 67",
         ));
 
+    final countryCodeField = TextFormField(
+      controller: _countryCodeController,
+      keyboardType: TextInputType.phone,
+      autofocus: false,
+      validator: (value) {
+        if (value != null) {
+          if (value.length > 3) {
+            return null;
+          }
+          return 'Hatalı Ülke Kodu!';
+        }
+      },
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(0),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+        hintText: "+90",
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(7.0),
+          child: SvgPicture.asset("lib/assets/images/svg/turkey.svg"),
+        ),
+      ),
+    );
+
     return Column(
       children: [
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Container(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(15, 30, 0, 0),
@@ -274,19 +313,19 @@ class _LoginPageState extends State<LoginPage> {
                             ]),
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 7,
                       ),
                       Text("Bilgilerinizi girip sözleşmeyi onaylayın.",
                           style: TextStyle(
                               color: Colors.white.withOpacity(0.8),
-                              fontSize: 12))
+                              fontSize: 14))
                     ]),
               ),
             ),
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Row(
             children: [
               Expanded(
@@ -298,15 +337,18 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Align(
-                        child: Text(
-                          "Ad",
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            "Ad",
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12),
+                          ),
                         ),
                         alignment: Alignment.topLeft,
                       ),
-                      nameField,
+                      Form(child: nameField),
                     ],
                   ),
                 )),
@@ -320,11 +362,14 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Align(
-                        child: Text(
-                          "Soyad",
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            "Soyad",
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12),
+                          ),
                         ),
                         alignment: Alignment.topLeft,
                       ),
@@ -337,18 +382,21 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Container(
               child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Align(
-                  child: Text(
-                    "Email",
-                    style: TextStyle(
-                        color: Colors.white.withOpacity(0.8), fontSize: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      "Email",
+                      style: TextStyle(
+                          color: Colors.white.withOpacity(0.8), fontSize: 12),
+                    ),
                   ),
                   alignment: Alignment.topLeft,
                 ),
@@ -358,18 +406,21 @@ class _LoginPageState extends State<LoginPage> {
           )),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Container(
               child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Align(
-                  child: Text(
-                    "Şifre",
-                    style: TextStyle(
-                        color: Colors.white.withOpacity(0.8), fontSize: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      "Şifre",
+                      style: TextStyle(
+                          color: Colors.white.withOpacity(0.8), fontSize: 12),
+                    ),
                   ),
                   alignment: Alignment.topLeft,
                 ),
@@ -379,28 +430,38 @@ class _LoginPageState extends State<LoginPage> {
           )),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Container(
               child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Align(
-                  child: Text(
-                    "Cep Telefonu Numaranız",
-                    style: TextStyle(
-                        color: Colors.white.withOpacity(0.8), fontSize: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      "Cep Telefonu Numaranız",
+                      style: TextStyle(
+                          color: Colors.white.withOpacity(0.8), fontSize: 12),
+                    ),
                   ),
                   alignment: Alignment.topLeft,
                 ),
-                phoneNumberfield,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(flex: 8, child: (countryCodeField)),
+                    Spacer(flex: 1),
+                    Expanded(flex: 22, child: phoneNumberfield),
+                  ],
+                ),
               ],
             ),
           )),
         ),
         Flexible(
-          flex: 1,
+          flex: 2,
           child: Container(
               width: MediaQuery.of(context).size.width,
               child: Row(
@@ -425,7 +486,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           color: Colors.white,
                           fontFamily: "Inter",
-                          fontSize: 12),
+                          fontSize: 14),
                     ),
                   ),
                 ],
@@ -433,10 +494,41 @@ class _LoginPageState extends State<LoginPage> {
         ),
         Flexible(
           flex: 2,
-          child: Container(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+            child: Container(
+              height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: TextButton(onPressed: () {}, child: Text("Giriş Yap"))),
+              child: TextButton(
+                onPressed: () {
+                  final provider = Provider.of<FirebaseLoginProvider>(context,
+                      listen: false);
+
+                  if (_passwordFormKey.currentState!.validate()) ;
+
+                  provider.signIn(
+                    email: _emailController.text.toString(),
+                    password: _passwordController.text.toString(),
+                  );
+                },
+                style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    foregroundColor: Colors.white,
+                    backgroundColor: sanaLiraGreen,
+                    textStyle:
+                        const TextStyle(fontSize: 18, fontFamily: "Inter")),
+                child: const Text(
+                  'Kayıt Ol',
+                ),
+              ),
+            ),
+          ),
         ),
+        SizedBox(
+          height: 15,
+        )
       ],
     );
   }
