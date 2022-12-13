@@ -21,8 +21,11 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   final _emailController = TextEditingController();
   final _phoneNumberController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _emailFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _surnameFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _phoneNumberFormKey = GlobalKey<FormState>();
   final _countryCodeController = TextEditingController();
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
@@ -121,22 +124,64 @@ class _LoginPageState extends State<LoginPage> {
   Column LoginForm(bool _contractCheck) {
     final passwordField = Form(
       key: _passwordFormKey,
-      child: TextFormField(
-          obscureText: _obscureText,
-          style: TextStyle(color: Colors.white),
-          controller: _passwordController,
-          autofocus: false,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Lütfen bir şifre belirleyin';
-            }
-            if (value.trim().length < 6) {
-              return 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
-            }
-            if (value.contains("?=.*[a-z]")) return null;
-          },
-          decoration: InputDecoration(
-              contentPadding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+      child: SizedBox(
+        height: 60,
+        child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            obscureText: _obscureText,
+            style: TextStyle(color: Colors.white),
+            controller: _passwordController,
+            autofocus: false,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Lütfen bir şifre belirleyin';
+              }
+              if (value.trim().length < 6) {
+                return 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
+              }
+              if (value.contains("?=.*[a-z]")) return null;
+            },
+            decoration: InputDecoration(
+                contentPadding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                hintText: "Lütfen şifre belirleyin",
+                suffixIcon: IconButton(
+                  icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32.0)))),
+      ),
+    );
+    final emailField = Form(
+      key: _emailFormKey,
+      child: SizedBox(
+        height: 60,
+        child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _emailController,
+            autofocus: false,
+            validator: (value) {
+              if (value != null) {
+                if (value.contains('@') && value.endsWith('.com')) {
+                  return null;
+                }
+                return 'Lütfen doğru bir e-posta adresi kullanın.';
+              }
+            },
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(15),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: Colors.white,
@@ -144,107 +189,121 @@ class _LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(10.0),
               ),
               hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-              hintText: "Lütfen şifre belirleyin",
-              suffixIcon: IconButton(
-                icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              ),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32.0)))),
+              hintText: "esrefyasa@monegon.com",
+            )),
+      ),
     );
-    final emailField = Form(
-      key: _formKey,
-      child: TextFormField(
-          controller: _emailController,
-          autofocus: false,
-          validator: (value) {
-            if (value != null) {
-              if (value.contains('@') && value.endsWith('.com')) {
-                return null;
+
+    final nameField = Form(
+      key: _nameFormKey,
+      child: SizedBox(
+        height: 60,
+        child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _nameController,
+            autofocus: false,
+            validator: (value) {
+              if (value != null) {
+                if (value.length > 3 && value.length < 50) {
+                  return null;
+                }
+                return 'İsminiz en az 3 karakter olmalıdır!';
               }
-              return 'Lütfen doğru bir e-posta adresi kullanın.';
-            }
-          },
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(15),
-            enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: Colors.white,
+            },
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(15),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-            hintText: "esrefyasa@monegon.com",
-          )),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              hintText: "Eşref IBAN",
+            )),
+      ),
     );
 
-    final nameField = TextFormField(
-        controller: _nameController,
-        autofocus: false,
-        validator: (value) {
-          if (value != null) {
-            if (value.length < 3 && value.length > 50) {
-              return null;
-            }
-            return 'İsminiz en az 3 karakter olmalıdır!';
-          }
-        },
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(15),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.white,
-            ),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          hintText: "Eşref IBAN",
-        ));
+    final surnameField = Form(
+      key: _surnameFormKey,
+      child: SizedBox(
+        height: 60,
+        child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _surnameController,
+            autofocus: false,
+            validator: (value) {
+              if (value != null) {
+                if (value.length > 3 && value.length < 50) {
+                  return null;
+                }
+                return 'Soyisminiz en az 3 karakter olmalıdır!';
+              }
+            },
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(15),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              hintText: "Yaşa",
+            )),
+      ),
+    );
 
-    final surnameField = TextFormField(
-        controller: _surnameController,
-        autofocus: false,
-        validator: (value) {
-          if (value != null) {
-            if (value.length < 3 && value.length > 50) {
-              return null;
-            }
-            return 'Soyisminiz en az 3 karakter olmalıdır!';
-          }
-        },
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(15),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.white,
-            ),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          hintText: "Yaşa",
-        ));
+    final phoneNumberfield = Form(
+      key: _phoneNumberFormKey,
+      child: SizedBox(
+        height: 60,
+        child: TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            controller: _phoneNumberController,
+            keyboardType: TextInputType.phone,
+            autofocus: false,
+            maxLength: 10,
+            validator: (value) {
+              if (value != null) {
+                if (value.length == 10) {
+                  return null;
+                }
+                return 'Telefon numaranızı kontrol ediniz !';
+              }
+            },
+            decoration: InputDecoration(
+              counterText: "", //Disabling the counter under the form ( 0/10 )
+              contentPadding: const EdgeInsets.all(15),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              hintText: "(535) 123 45 67",
+            )),
+      ),
+    );
 
-    final phoneNumberfield = TextFormField(
-        controller: _phoneNumberController,
+    final countryCodeField = SizedBox(
+      height: 60,
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: _countryCodeController,
         keyboardType: TextInputType.phone,
         autofocus: false,
-        maxLength: 10,
         validator: (value) {
           if (value != null) {
-            if (value.length < 9 && value.length > 11) {
+            if (value.length > 3) {
               return null;
             }
-            return 'Telefon numaranızı kontrol ediniz !';
+            return 'Hatalı Ülke Kodu!';
           }
         },
         decoration: InputDecoration(
-          counterText: "", //Disabling the counter under the form ( 0/10 )
-          contentPadding: const EdgeInsets.all(15),
+          contentPadding: const EdgeInsets.all(0),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: Colors.white,
@@ -252,34 +311,11 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-          hintText: "(535) 123 45 67",
-        ));
-
-    final countryCodeField = TextFormField(
-      controller: _countryCodeController,
-      keyboardType: TextInputType.phone,
-      autofocus: false,
-      validator: (value) {
-        if (value != null) {
-          if (value.length > 3) {
-            return null;
-          }
-          return 'Hatalı Ülke Kodu!';
-        }
-      },
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(0),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.white,
+          hintText: "+90",
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(7.0),
+            child: SvgPicture.asset("lib/assets/images/svg/turkey.svg"),
           ),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-        hintText: "+90",
-        prefixIcon: Padding(
-          padding: const EdgeInsets.all(7.0),
-          child: SvgPicture.asset("lib/assets/images/svg/turkey.svg"),
         ),
       ),
     );
@@ -332,7 +368,7 @@ class _LoginPageState extends State<LoginPage> {
                 flex: 1,
                 child: Container(
                     child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -357,7 +393,7 @@ class _LoginPageState extends State<LoginPage> {
                 flex: 1,
                 child: Container(
                     child: Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 0),
+                  padding: const EdgeInsets.fromLTRB(5, 0, 15, 0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -504,7 +540,11 @@ class _LoginPageState extends State<LoginPage> {
                   final provider = Provider.of<FirebaseLoginProvider>(context,
                       listen: false);
 
-                  if (_passwordFormKey.currentState!.validate()) ;
+                  _passwordFormKey.currentState!.validate();
+                  _emailFormKey.currentState!.validate();
+                  _nameFormKey.currentState!.validate();
+                  _surnameFormKey.currentState!.validate();
+                  _phoneNumberFormKey.currentState!.validate();
 
                   provider.signIn(
                     email: _emailController.text.toString(),
