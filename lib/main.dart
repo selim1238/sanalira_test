@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import "package:provider/provider.dart";
 import 'package:sanalira_test/pages/login.dart';
 import 'package:sanalira_test/pages/main_menu.dart';
-import 'package:sanalira_test/pages/top_up.dart';
+import 'package:sanalira_test/pages/top_up/topup.dart';
 import 'package:sanalira_test/utility/colors.dart';
 import 'package:sanalira_test/utility/firebase/firebase_auth.dart';
 

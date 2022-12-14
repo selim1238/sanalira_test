@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:sanalira_test/pages/top_up.dart';
+import 'package:sanalira_test/pages/top_up/topup.dart';
 import 'package:sanalira_test/utility/colors.dart';
 
 import '../utility/custom_icons.dart';

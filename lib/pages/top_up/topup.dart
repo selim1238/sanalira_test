@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sanalira_test/pages/top_up/topup_bank_data.dart';
 import 'package:sanalira_test/utility/colors.dart';
 import 'package:sanalira_test/utility/custom_icons.dart';
 
@@ -88,7 +89,7 @@ class TopUpMenu extends StatelessWidget {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.1,
@@ -182,11 +183,23 @@ class TopUpMenu extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                    child: Container(
+                        child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                                "Türk lirası yatırmak için banka seçiniz.",
+                                style: TextStyle(
+                                    color: customGrey,
+                                    fontFamily: "Inter",
+                                    fontSize: 14)))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: 400,
-                      color: Colors.blue,
+                      height: MediaQuery.of(context).size.height * 0.55,
+                      child: TopupBankData(),
                     ),
                   )
                 ],
