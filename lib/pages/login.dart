@@ -574,10 +574,28 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.75,
-                    child: Text(
-                      "Hesabınızı oluştururken sözleşme ve koşulları kabul etmeniz gerekir.",
-                      maxLines: 2,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {},
+                        child: RichText(
+                          text: TextSpan(children: const <TextSpan>[
+                            TextSpan(
+                                text: "Hesabınızı oluştururken",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14)),
+                            TextSpan(
+                                text: " sözleşme ve koşulları ",
+                                style: TextStyle(
+                                    color: sanaLiraGreen,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: "kabul etmeniz gerekir.",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14))
+                          ]),
+                        ),
+                      ),
                     ),
                   ),
                 ],
