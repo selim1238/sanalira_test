@@ -133,13 +133,19 @@ class _LoginPageState extends State<LoginPage> {
             controller: _passwordController,
             autofocus: false,
             validator: (value) {
+              RegExp regex = RegExp(
+                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
               if (value == null || value.trim().isEmpty) {
                 return 'Lütfen bir şifre belirleyin';
-              }
-              if (value.trim().length < 6) {
+              } else if (!regex.hasMatch(value)) {
+                return "Şifreniz küçük harf, büyük harf, sayı ve özel karakter içermelidir.";
+              } else if (value.trim().length < 6) {
                 return 'Şifreniz en az 6 karakter uzunluğunda olmalıdır.';
               }
-              if (value.contains("?=.*[a-z]")) return null;
+              if (value.trim().length > 20) {
+                return 'Şifreniz en fazla 20 karakter uzunluğunda olmalıdır.';
+              } else
+                return null;
             },
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
@@ -169,6 +175,7 @@ class _LoginPageState extends State<LoginPage> {
       child: SizedBox(
         height: 60,
         child: TextFormField(
+            style: TextStyle(color: Colors.white),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _emailController,
             autofocus: false,
@@ -199,6 +206,7 @@ class _LoginPageState extends State<LoginPage> {
       child: SizedBox(
         height: 60,
         child: TextFormField(
+            style: TextStyle(color: Colors.white),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _nameController,
             autofocus: false,
@@ -229,6 +237,7 @@ class _LoginPageState extends State<LoginPage> {
       child: SizedBox(
         height: 60,
         child: TextFormField(
+            style: TextStyle(color: Colors.white),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _surnameController,
             autofocus: false,
@@ -259,6 +268,7 @@ class _LoginPageState extends State<LoginPage> {
       child: SizedBox(
         height: 60,
         child: TextFormField(
+            style: TextStyle(color: Colors.white),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _phoneNumberController,
             keyboardType: TextInputType.phone,
@@ -540,13 +550,15 @@ class _LoginPageState extends State<LoginPage> {
                   final provider = Provider.of<FirebaseLoginProvider>(context,
                       listen: false);
 
-                  _passwordFormKey.currentState!.validate();
-                  _emailFormKey.currentState!.validate();
-                  _nameFormKey.currentState!.validate();
-                  _surnameFormKey.currentState!.validate();
-                  _phoneNumberFormKey.currentState!.validate();
+                  if (_passwordFormKey.currentState!.validate() &&
+                      _emailFormKey.currentState!.validate() &&
+                      _nameFormKey.currentState!.validate() &&
+                      _surnameFormKey.currentState!.validate() &&
+                      _phoneNumberFormKey.currentState!.validate() == true) {
+                    print("true");
+                  }
 
-                  provider.signIn(
+                  provider.registerWithEmail(
                     email: _emailController.text.toString(),
                     password: _passwordController.text.toString(),
                   );

@@ -70,6 +70,7 @@ flutter:
   assets:
     - lib/assets/images/png/
     - lib/assets/images/svg/
+    - lib/assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -88,6 +89,9 @@ flutter:
         - asset: lib/assets/fonts/Inter/Inter-Regular.ttf
         - asset: lib/assets/fonts/Inter/Inter-SemiBold.ttf
         - asset: lib/assets/fonts/Inter/Inter-Medium.ttf
+    - family:  MyFlutterApp
+      fonts:
+        - asset: lib/assets/icons/customIcons.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

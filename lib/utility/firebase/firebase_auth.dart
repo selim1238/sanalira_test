@@ -29,7 +29,15 @@ class FirebaseLoginProvider extends ChangeNotifier {
     }
   }
 
-  Future register({String? email, String? password}) async {}
+  Future registerWithEmail({String? email, String? password}) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: email.toString(), password: password.toString());
+      return null;
+    } on FirebaseException catch (e) {
+      return e.message;
+    }
+  }
 
   void logout() async {
     await googleSignIn.disconnect();
