@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -557,11 +559,20 @@ class _LoginPageState extends State<LoginPage> {
                       _phoneNumberFormKey.currentState!.validate() == true) {
                     print("true");
                   }
-
-                  provider.registerWithEmail(
-                    email: _emailController.text.toString(),
-                    password: _passwordController.text.toString(),
-                  );
+                  provider
+                      .registerWithEmail(
+                        email: _emailController.text.toString(),
+                        password: _passwordController.text.toString(),
+                      )
+                      .whenComplete(() => provider.firestoreUserCreation(
+                            userId: FirebaseAuth.instance.currentUser!.uid
+                                .toString(),
+                            email: _emailController.text.toString(),
+                            creationDate: DateTime.now().toString(),
+                            name: _nameController.text.toString(),
+                            surname: _surnameController.text.toString(),
+                            phoneNumber: _phoneNumberController.text.toString(),
+                          ));
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
