@@ -617,23 +617,22 @@ class _LoginPageState extends State<LoginPage> {
                       _emailFormKey.currentState!.validate() &&
                       _nameFormKey.currentState!.validate() &&
                       _surnameFormKey.currentState!.validate() &&
-                      _phoneNumberFormKey.currentState!.validate() == true) {
-                    provider
-                        .registerWithEmail(
-                          email: _emailController.text.toString(),
-                          password: _passwordController.text.toString(),
-                        )
-                        .whenComplete(() => provider.firestoreUserCreation(
-                              userId: FirebaseAuth.instance.currentUser!.uid
-                                  .toString(),
-                              email: _emailController.text.toString(),
-                              creationDate: DateTime.now().toString(),
-                              name: _nameController.text.toString(),
-                              surname: _surnameController.text.toString(),
-                              phoneNumber:
-                                  _phoneNumberController.text.toString(),
-                            ));
-                  }
+                      _phoneNumberFormKey.currentState!.validate() == true) {}
+                  provider
+                      .registerWithEmail(
+                        email: _emailController.text.toString(),
+                        password: _passwordController.text.toString(),
+                      )
+                      .whenComplete(() => provider.firestoreUserCreation(
+                            userId: FirebaseAuth.instance.currentUser!.uid
+                                .toString(),
+                            email: _emailController.text.toString(),
+                            creationDate: DateTime.now().toString(),
+                            name: _nameController.text.toString(),
+                            countryCode: defaultCountryCode.toString(),
+                            surname: _surnameController.text.toString(),
+                            phoneNumber: _phoneNumberController.text.toString(),
+                          ));
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
