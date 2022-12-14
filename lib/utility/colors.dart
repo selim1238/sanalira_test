@@ -9,3 +9,4 @@ const Color sanaLiraGreen = Color(0xFF66CC78);
 const Color navigationMenuColor = Color(0xFF252741);
 
 const Color topupBackgroundColor = Color(0xFFF3F4F6);
+const Color customGrey = Color(0xFFCFD4DE);
