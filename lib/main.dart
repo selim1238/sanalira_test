@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
+          fontFamily: "Inter",
           primaryColor: Colors.white,
           primarySwatch: Colors.green,
           unselectedWidgetColor: Colors.white),

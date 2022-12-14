@@ -15,6 +15,9 @@ class TopupBankData extends StatefulWidget {
 }
 
 class _TopupBankDataState extends State<TopupBankData> {
+  final String bankNameHeadline = "Hesap Adı";
+  final String bankDetailHeadline = "IBAN";
+  final String bankDescriptionHeadline = "Açıklama";
   late Future<SanaliraModel> _sanaliraModel;
 
   @override
@@ -80,7 +83,7 @@ class _TopupBankDataState extends State<TopupBankData> {
                                                   width: MediaQuery.of(context)
                                                       .size
                                                       .width,
-                                                  child: Text("Hesap Adı",
+                                                  child: Text(bankNameHeadline,
                                                       style: TextStyle(
                                                           color: customGrey))),
                                             ),
@@ -178,7 +181,8 @@ class _TopupBankDataState extends State<TopupBankData> {
                                                   width: MediaQuery.of(context)
                                                       .size
                                                       .width,
-                                                  child: Text("IBAN",
+                                                  child: Text(
+                                                      bankDetailHeadline,
                                                       style: TextStyle(
                                                           color: customGrey))),
                                             ),
@@ -273,7 +277,8 @@ class _TopupBankDataState extends State<TopupBankData> {
                                                   width: MediaQuery.of(context)
                                                       .size
                                                       .width,
-                                                  child: Text("Açıklama",
+                                                  child: Text(
+                                                      bankDescriptionHeadline,
                                                       style: TextStyle(
                                                           color: customGrey))),
                                             ),

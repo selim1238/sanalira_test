@@ -33,9 +33,13 @@ class _LoginPageState extends State<LoginPage> {
   final _surnameController = TextEditingController();
   final _passwordController = TextEditingController();
   final FirebaseLoginProvider _auth = FirebaseLoginProvider();
+  String defaultCountryCode = "+90";
+  String defaultCountrySvgValue = "lib/assets/images/svg/turkey.svg";
   bool formErrorCheck = false;
   RegExp numReg = RegExp(r".*[0-9].*");
   RegExp letterReg = RegExp(r".*[A-Za-z].*");
+
+  List<String> countryCodeList = [];
 
   bool _contractCheck = false;
 
@@ -96,7 +100,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             Text("SanaLira",
                                 style: TextStyle(
-                                    fontFamily: "Inter",
                                     fontSize: 21,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold))
@@ -345,20 +348,18 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
-                        text: TextSpan(
-                            style: TextStyle(fontFamily: "Inter"),
-                            children: const <TextSpan>[
-                              TextSpan(
-                                  text: "SanaLira'ya ",
-                                  style: TextStyle(
-                                      color: sanaLiraGreen,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              TextSpan(
-                                  text: "Yeni Üyelik",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16))
-                            ]),
+                        text: TextSpan(children: const <TextSpan>[
+                          TextSpan(
+                              text: "SanaLira'ya ",
+                              style: TextStyle(
+                                  color: sanaLiraGreen,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: "Yeni Üyelik",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16))
+                        ]),
                       ),
                       SizedBox(
                         height: 7,
@@ -499,7 +500,52 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Expanded(flex: 8, child: (countryCodeField)),
+                    Expanded(
+                        flex: 8,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: InkWell(
+                            onTap: () {
+                              showModalBottomSheet(
+                                  context: context,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(25)),
+                                  ),
+                                  builder: (BuildContext context) {
+                                    return Card();
+                                  });
+                            },
+                            child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: Colors.white, width: 1)),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 0, 0, 0),
+                                      child: SvgPicture.asset(
+                                        defaultCountrySvgValue,
+                                        width: 30,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      defaultCountryCode,
+                                      style: TextStyle(
+                                        color: customGrey,
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          ),
+                        )),
                     Spacer(flex: 1),
                     Expanded(flex: 22, child: phoneNumberfield),
                   ],
@@ -531,10 +577,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Hesabınızı oluştururken sözleşme ve koşulları kabul etmeniz gerekir.",
                       maxLines: 2,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Inter",
-                          fontSize: 14),
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
                 ],
@@ -557,22 +600,22 @@ class _LoginPageState extends State<LoginPage> {
                       _nameFormKey.currentState!.validate() &&
                       _surnameFormKey.currentState!.validate() &&
                       _phoneNumberFormKey.currentState!.validate() == true) {
-                    print("true");
+                    provider
+                        .registerWithEmail(
+                          email: _emailController.text.toString(),
+                          password: _passwordController.text.toString(),
+                        )
+                        .whenComplete(() => provider.firestoreUserCreation(
+                              userId: FirebaseAuth.instance.currentUser!.uid
+                                  .toString(),
+                              email: _emailController.text.toString(),
+                              creationDate: DateTime.now().toString(),
+                              name: _nameController.text.toString(),
+                              surname: _surnameController.text.toString(),
+                              phoneNumber:
+                                  _phoneNumberController.text.toString(),
+                            ));
                   }
-                  provider
-                      .registerWithEmail(
-                        email: _emailController.text.toString(),
-                        password: _passwordController.text.toString(),
-                      )
-                      .whenComplete(() => provider.firestoreUserCreation(
-                            userId: FirebaseAuth.instance.currentUser!.uid
-                                .toString(),
-                            email: _emailController.text.toString(),
-                            creationDate: DateTime.now().toString(),
-                            name: _nameController.text.toString(),
-                            surname: _surnameController.text.toString(),
-                            phoneNumber: _phoneNumberController.text.toString(),
-                          ));
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -580,8 +623,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     foregroundColor: Colors.white,
                     backgroundColor: sanaLiraGreen,
-                    textStyle:
-                        const TextStyle(fontSize: 18, fontFamily: "Inter")),
+                    textStyle: const TextStyle(fontSize: 18)),
                 child: const Text(
                   'Kayıt Ol',
                 ),
